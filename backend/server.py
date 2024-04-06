@@ -15,19 +15,13 @@ def create_connection():
 # Endpoint to handle POST requests
 @app.route('/query', methods=['POST'])
 def execute_query():
-    # Get the SQL query from the request data
-    query = request.json.get('query')
-
-    if query is None:
-        return jsonify({'error': 'No query provided'}), 400
-
     try:
         # Establish connection to SQL Server
         conn = create_connection()
         cursor = conn.cursor()
 
         # Execute the query
-        cursor.execute(query)
+        cursor.execute("SELECT * FROM User_details")
         results = cursor.fetchall()
 
         # Convert results to list of dictionaries
