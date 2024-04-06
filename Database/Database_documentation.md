@@ -2,8 +2,9 @@ Database Documentation: ASCII
 
 1.Introduction:
     The ASCII database is designed to manage various aspects of a system, primarily focusing on user information, project details, and financial transactions.
-
+    
 2. Database Schema:
+
 User_email:
     Stores user PSRN (Personal Serial Number) along with their email addresses.
     Knowledge required: Understanding of user identification and email management.
@@ -46,10 +47,10 @@ PurchaseList:
    
 3.Running the Database:
 To run the SQL scripts in a terminal:
-    1. Install a database management system like MySQL or PostgreSQL.
-    2. Copy the SQL script into a text file, say `ascii_database.sql`.
-    3. Open a terminal and navigate to the directory containing `ascii_database.sql`.
-    4. Run the following command to create the database:
+    <br>1. Install a database management system like MySQL.
+    <br>2. Copy the SQL script into a text file, say `ascii_database.sql`.
+    <br>3. Open a terminal and navigate to the directory containing `ascii_database.sql`.
+    <br>4. Run the following command to create the database:
     ```
     mysql -u username -p < ascii_database.sql
     ```
@@ -62,6 +63,7 @@ To run the SQL scripts in a terminal:
     3. Run the following command to insert data into the database:
     ```
     mysql -u username -p ASCII < insert_data.sql
+    
     ```
     Again, replace `username` with your MySQL username, and enter the password when prompted.
    
