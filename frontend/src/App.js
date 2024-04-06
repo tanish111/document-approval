@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, BrowserRouter, Routes } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -12,19 +12,35 @@ import LoginPage from './pages/Login';
 function App() {
   return (
     <BrowserRouter>
-    <ChakraProvider>
-      <Navbar />
-      <Routes>
-      <Route exact path="/" element={<Home/>} />
-      <Route exact path="/paform" element={<PAPage/>} />
-      <Route exact path="/forwardbilling" element={<ForwardingBillingPage/>} />
-      <Route exact path="/purchase" element={<PurchasePage/>} />
-      <Route exact path="/hodapproval" element={<HODApprovalPage/>} />
-      <Route exact path="/login" element={<LoginPage/>} />
-
-      </Routes>
+      <ChakraProvider>
+        <Routes>
+          <Route
+            path="/*"
+            element={<AppLayout />}
+          />
+        </Routes>
       </ChakraProvider>
-      </BrowserRouter>
+    </BrowserRouter>
+  );
+}
+
+function AppLayout() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
+  return (
+    <React.Fragment>
+      {!isLoginPage && <Navbar />}
+      <Routes>
+        <Route exact path="/home" element={<Home />} />
+        <Route exact path="/paform" element={<PAPage />} />
+        <Route exact path="/forwardbilling" element={<ForwardingBillingPage />} />
+        <Route exact path="/purchase" element={<PurchasePage />} />
+        <Route exact path="/hodapproval" element={<HODApprovalPage />} />
+        <Route exact path="/" element={<LoginPage />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </React.Fragment>
   );
 }
 

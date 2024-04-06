@@ -1,27 +1,62 @@
-import { Box, Button, Center, ChakraProvider, Image } from "@chakra-ui/react";
-import React from "react";
-import { useNavigate } from 'react-router-dom'; 
+/*App.js*/
 
-const LoginPage = () => {
-    const navigate = useNavigate(); 
+import React, { useState, useEffect } from 'react';
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
-  return (
-    <ChakraProvider>
-      <Center h="100vh">
-        <Box textAlign="center">
+function Login() {
+    const [ user, setUser ] = useState([]);
+    const [ profile, setProfile ] = useState([]);
 
-          {/* Google login button */}
-          <Button
-            colorScheme="blue"
-            leftIcon={<Image src={'./google-logo.png'} alt="Google Logo" height={"2rem"}/>}
-            onClick={()=>{navigate('/')}}
-          >
-            Sign in with Google
-          </Button>
-        </Box>
-      </Center>
-    </ChakraProvider>
-  );
-};
+    const login = useGoogleLogin({
+        onSuccess: (codeResponse) => setUser(codeResponse),
+        onError: (error) => console.log('Login Failed:', error)
+    });
 
-export default LoginPage;
+    useEffect(
+        () => {
+            if (user) {
+                axios
+                    .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+                        headers: {
+                            Authorization: `Bearer ${user.access_token}`,
+                            Accept: 'application/json'
+                        }
+                    })
+                    .then((res) => {
+                        setProfile(res.data.email);
+                    })
+                    .catch((err) => console.log(err));
+            }
+        },
+        [ user ]
+    );
+
+    // log out function to log the user out of google and set the profile array to null
+    const logOut = () => {
+        googleLogout();
+        setProfile(null);
+    };
+
+    return (
+        <div>
+            <h2>React Google Login</h2>
+            <br />
+            <br />
+            {profile ? (
+                <div>
+                    <img src={profile.picture} alt="user image" />
+                    <h3>User Logged in</h3>
+                    <p>Name: {profile.name}</p>
+                    <p>Email Address: {profile.email}</p>
+                    <br />
+                    <br />
+                    <button onClick={logOut}>Log out</button>
+                </div>
+            ) : (
+                <button onClick={login}>Sign in with Google 🚀 </button>
+            )}
+        </div>
+    );
+}
+export default Login;
