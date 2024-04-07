@@ -29,7 +29,7 @@ const HODApprovalPage = () => {
         const paDetailsUnbrach = res.data.map(item => ({
           PaNum: item[1],
           SubmissionStatus: "Submitted",
-          ApprovalStatus: item[3] === 0 ? "Under Review" : "Approved"
+          ApprovalStatus: item[4] === 0 ? "Under Review" : "Approved"
       }));
       setPaDetails(paDetailsUnbrach);
       }).catch((err)=>{
