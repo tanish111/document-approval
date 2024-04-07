@@ -9,8 +9,6 @@ const Home = () => {
   return (
     <Box padding="4">
       <Heading as="h1" size="lg" marginBottom="4">Home</Heading>
-
-
       {/* Navigation Options */}
       <VStack spacing="4" align="stretch">
         {/* Sections */}
@@ -19,7 +17,7 @@ const Home = () => {
           <Heading as="h2" size="md" marginBottom="2">Professional Allowance</Heading>
           <VStack spacing="2" align="stretch">
             <Button colorScheme="teal" variant="outline" onClick={() => navigate('/paform')}>Apply</Button>
-            <Button colorScheme="teal" variant="outline">View Applied</Button>
+            <Button colorScheme="teal" variant="outline" onClick={() => navigate('/viewpaform')}>View Applied</Button>
           </VStack>
         </Box>
 

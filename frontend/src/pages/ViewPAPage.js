@@ -19,30 +19,17 @@ import { useAppContext } from '../contexts/AppContext';
 import axios from 'axios';
 
 const HODApprovalPage = () => {
-  const [selectedApplication, setSelectedApplication] = useState(null);
   const { email, setEmail, psrn, setPSRN,name,setName,designation,setDesignation,profileimage,setprofileimage } = useAppContext();
+  const [selectedApplication, setSelectedApplication] = useState(null);
   const [paDetails,setPaDetails] = useState([]);
   const [paItemDetails,setPaItemDetails] = useState([]);
-  const ApprovProj = async (userPSRN,userPANUM) => {
+  const fetchDataPA = async (userPSRN) => {
     try {
-      await axios.post('http://127.0.0.1:5000/approveQuery', { userPSRN,userPANUM }).then((res)=>{
-        paDetails.splice(paDetails.findIndex(e => (e.PSRN_n === userPSRN) && (e.PaNum=userPANUM) ),1);
-        fetchDataPA(psrn);
-      }).catch((err)=>{
-        console.log(err.message);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  const fetchDataPA = async () => {
-    try {
-      await axios.post('http://127.0.0.1:5000/get_rej', { }).then((res)=>{
+      await axios.post('http://127.0.0.1:5000/pa_details', { userPSRN }).then((res)=>{
         const paDetailsUnbrach = res.data.map(item => ({
-          PaNum: item[0],
-          FacultyName: item[2],
-          Amount: item[1],
-          PSRN_n:item[3]
+          PaNum: item[1],
+          SubmissionStatus: "Submitted",
+          ApprovalStatus: item[3] === 0 ? "Under Review" : "Approved"
       }));
       setPaDetails(paDetailsUnbrach);
       }).catch((err)=>{
@@ -52,6 +39,7 @@ const HODApprovalPage = () => {
       console.log(error);
     }
   };
+
   const handleViewDetails = async (userPSRN,userPANUM) => {
     setSelectedApplication(userPANUM);
     try {
@@ -74,22 +62,7 @@ const HODApprovalPage = () => {
     }
 
   };
-  const conferencesData = [
-    {
-      description: "Conference A",
-      cashMemo: "CM123",
-      date: "2022-10-15",
-      totalTravelExpense: 500,
-      totalOtherExpense: 100,
-    },
-    {
-      description: "Conference B",
-      cashMemo: "CM456",
-      date: "2022-11-20",
-      totalTravelExpense: 600,
-      totalOtherExpense: 150,
-    },
-  ];
+
   const handleCloseModal = () => {
     setSelectedApplication(null);
   };
@@ -100,49 +73,39 @@ const HODApprovalPage = () => {
   return (
     <Box padding="4">
       <Heading as="h1" size="lg" marginBottom="4">
-        HOD Approval
+            Your Professional Allowance
       </Heading>
-      <Heading as="h2" size="md" marginBottom="4">
-        Personal Allowance Requests
-      </Heading>
+
       <Table variant="simple" marginBottom="4">
         <Tbody>
           <Tr>
-            <Td>Sr. No.</Td>
-            <Td>PSRN</Td>
-            <Td>PaNum</Td>
-            <Td>Faculty Name</Td>
-            <Td>Amount</Td>
+            <Td>PA. No.</Td>
+            <Td>Submission Status</Td>
+            <Td>Approval Status</Td>
             <Td>Actions</Td>
           </Tr>
-          {paDetails.map((application,index) => (
-            <Tr key={application.srNo}>
-              <Td>{index}</Td>
-              <Td>{application.PSRN_n}</Td>
+          {paDetails.map((application) => (
+            <Tr key={application.PaNum}>
               <Td>{application.PaNum}</Td>
-              <Td>{application.FacultyName}</Td>
-              <Td>{application.Amount}</Td>
+              <Td>{application.SubmissionStatus}</Td>
+              <Td>{application.ApprovalStatus}</Td>
               <Td>
                 <Button
                   colorScheme="teal"
                   size="sm"
                   marginRight="2"
-                  onClick={() => handleViewDetails(application.PSRN_n,application.PaNum)}
+                  onClick={async () => {
+                    handleViewDetails(psrn,application.PaNum)
+                    console.log(application.PaNum)
+                  }}
                 >
                   View
                 </Button>
-                <Button colorScheme="green" size="sm"
-                                  marginRight="2"
-                                  onClick={async () => {
-                                    await ApprovProj(application.PSRN_n,application.PaNum)
-                                  }}
-                >
-                  Approve
-                </Button>
                 <Button colorScheme="red" size="sm"
                                   marginRight="2"
+                                  isDisabled = {application.ApprovalStatus=="Approved"}
                 >
-                  Reject
+                  Withdraw
                 </Button>
               </Td>
             </Tr>

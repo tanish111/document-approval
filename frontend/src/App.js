@@ -8,17 +8,21 @@ import ForwardingBillingPage from './pages/ForwardingBillingPage';
 import PurchasePage from './pages/PurchasePage';
 import HODApprovalPage from './pages/HODApprovalPage';
 import LoginPage from './pages/Login';
+import ViewPAPage from './pages/ViewPAPage'
+import { AppProvider } from './contexts/AppContext';
 
 function App() {
   return (
     <BrowserRouter>
       <ChakraProvider>
+      <AppProvider>
         <Routes>
           <Route
             path="/*"
             element={<AppLayout />}
           />
         </Routes>
+        </AppProvider>
       </ChakraProvider>
     </BrowserRouter>
   );
@@ -26,7 +30,7 @@ function App() {
 
 function AppLayout() {
   const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
+  const isLoginPage = location.pathname === '/';
 
   return (
     <React.Fragment>
@@ -37,6 +41,7 @@ function AppLayout() {
         <Route exact path="/forwardbilling" element={<ForwardingBillingPage />} />
         <Route exact path="/purchase" element={<PurchasePage />} />
         <Route exact path="/hodapproval" element={<HODApprovalPage />} />
+        <Route exact path="/viewpaform" element={<ViewPAPage />} />
         <Route exact path="/" element={<LoginPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

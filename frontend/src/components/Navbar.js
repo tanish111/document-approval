@@ -1,10 +1,11 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import { useNavigate } from 'react-router-dom'; 
+import { useAppContext } from '../contexts/AppContext';
 
 const Navbar = () => {
   const navigate = useNavigate(); 
-
+  const { email, setEmail, psrn, setPSRN,name,setName,designation,setDesignation,profileimage,setprofileimage } = useAppContext();
   return (
     <Flex
       as="nav"
@@ -36,12 +37,12 @@ const Navbar = () => {
       <Box width="50%" display="flex" alignItems="center" justifyContent="flex-end">
         {/* Profile Photo */}
         <Box mr="1rem">
-          <Image src="/faculty_profile.jpg" alt="Profile Photo" borderRadius="50%" boxSize="50px" />
+          <Image src={profileimage=="" ? "/faculty_profile.jpg" : profileimage} alt="Profile Photo" borderRadius="50%" boxSize="50px" />
         </Box>
         {/* Faculty Name */}
-        <Box>
-          <Text fontSize="lg" textAlign={"center"} margin={0} padding={0}>Dr. Santonu Sarkar</Text>
-          <Text fontSize="lg" textAlign={"center"} margin={0} padding={0}>Head of Department</Text>
+        <Box display={"flex"} flexDir={"column"}> 
+          <Text width={"100%"} fontSize="lg" textAlign={"center"} margin={0} padding={0}>{name}</Text>
+          <Text width={"100%"} fontSize="lg" textAlign={"center"} margin={0} padding={0}>{designation}</Text>
         </Box>
       </Box>
     </Flex>

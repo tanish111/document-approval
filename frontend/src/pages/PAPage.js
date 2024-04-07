@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Box,
   Button,
@@ -14,11 +14,53 @@ import {
   Tr,
   useToast,
 } from "@chakra-ui/react";
+import { useAppContext } from '../contexts/AppContext';
+import axios from 'axios';
+function generateRandomThreeDigitNumber() {
+  // Math.random() generates a random floating-point number between 0 (inclusive) and 1 (exclusive)
+  // We multiply it by 900 to get a number between 0 and 899
+  // Then, we add 100 to ensure the number is at least 100 and at most 999
+  return Math.floor(Math.random() * 900) + 100;
+}
 
 const PAPage = () => {
+  const { email, setEmail, psrn, setPSRN,name,setName,designation,setDesignation,profileimage,setprofileimage } = useAppContext();
   const [rows, setRows] = useState([{ slNo: 1, description: "", cashMemoInvoice: "", date: "", travelExpense: "", otherExpense: "" }]);
+  const [PANumS,setPaNumS] = useState(0);
   const toast = useToast();
 
+  const createDataPA = async (userPSRN,PANum,Save_status,Submit_status,ApprovalStatus) => {
+    try {
+      await axios.post('http://127.0.0.1:5000/ins_det_nfa', { userPSRN,PANum,Save_status,Submit_status,ApprovalStatus}).then((res)=>{
+        setPaNumS(PANum);
+      }).catch((err)=>{
+        console.log(err.message);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const insertDataPA = async (userPSRN,PANum,ItemID,ItemDesc,InvoiceNum,Date1,ConferenceAmt,OtherAmt) => {
+    try {
+      await axios.post('http://127.0.0.1:5000/ins_det', { userPSRN,ItemID,ItemDesc,InvoiceNum,Date1,ConferenceAmt,OtherAmt,PANum}).then((res)=>{
+        console.log("Added Successfully")
+      }).catch((err)=>{
+        console.log(err.message);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleSubmitBtn = async () => {
+    const panum = generateRandomThreeDigitNumber();
+    await createDataPA(psrn,panum,1,1,0);
+    rows.map(async (row, index) =>{
+      await insertDataPA(psrn,panum,row.slNo,row.description,row.cashMemoInvoice,row.date,row.travelExpense,row.otherExpense);
+    })
+
+  }
   const handleAddRow = () => {
     const newRow = { slNo: rows.length + 1, description: "", cashMemoInvoice: "", date: "", travelExpense: "", otherExpense: "" };
     setRows([...rows, newRow]);
@@ -40,6 +82,7 @@ const PAPage = () => {
     event.preventDefault();
     // Handle form submission logic
     console.log(rows);
+    handleSubmitBtn();
     toast({
       title: "Form Submitted",
       status: "success",
@@ -57,7 +100,7 @@ const PAPage = () => {
   const calculateTotalOtherExpenses = () => {
     return rows.reduce((acc, row) => acc + parseFloat(row.otherExpense || 0), 0);
   };
-
+insertDataPA(548791,20,2,"Hello",123232,"2/2/23",1222,1332);
   return (
     <Box padding="4">
       <Heading as="h1" size="lg" marginBottom="4">
@@ -65,9 +108,9 @@ const PAPage = () => {
       </Heading>
 
       {/* Static Text Lines */}
-      <Text fontWeight="bold">Name of Faculty:- Santonu Sarkar</Text>
-      <Text>Designation:- Head of Department</Text>
-      <Text>PSRN:- 348035803</Text>
+      <Text fontWeight="bold">Name of Faculty:- {name}</Text>
+      <Text>Designation:- {designation}</Text>
+      <Text>PSRN:- {psrn}</Text>
       <Text>Entitlement Limit:- 1,00,000 INR</Text>
 
       <Table variant="simple" marginBottom="4">
